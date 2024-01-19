@@ -11,7 +11,11 @@ import {
   Text,
   useColorScheme,
   View,
-  TextInput, TouchableOpacity, Alert
+  TextInput, 
+  TouchableOpacity, 
+  Alert,
+  ActivityIndicator,
+  Keyboard
 } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 
@@ -37,9 +41,13 @@ function App() {
   const [selectedDepartemen, setSelectedDepartemen] = useState('');
   //state validation
   const [errors, setErrors] = useState([]);
+  //state loading
+  const [loading, setLoading] = useState(false);
 
   // Function to insert data
   const insertData = async () => {  
+      setLoading(true);
+      Keyboard.dismiss();
       try {
           const apiUrl = 'https://helpdesk.armadahadagraha.com/api/tiket'; // Replace with your API endpoint
       
@@ -58,13 +66,14 @@ function App() {
               // Add any other headers if required, like authorization headers
             },
           });
-      
+          setLoading(false);
+          setProblem('');
           console.log('Data inserted successfully:', response.data);
           // Handle successful insertion here
           Alert.alert(
               'Tiket Berhasil dibuat silahkan cek email anda !', // Message body of the alert// Prevents dismissing the alert by tapping outside
             );
-            setProblem('');
+      
         } catch (error) {
           //set errors response to state "errors"
           setErrors(error.response.data);
@@ -73,98 +82,104 @@ function App() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.centeredContent}>
-        <View style={styles.header}>
-          <Text style={styles.logo}>IT-Helpdesk AHG</Text>
-        </View>
-        <View style={styles.separator}></View>
+    <View style={styles.base_container}>
+      <View style={styles.container}>
+        <View style={styles.centeredContent}>
+          <View style={styles.header}>
+            <Text style={styles.logo}>IT-Helpdesk AHG</Text>
+          </View>
+          <View style={styles.separator}></View>
 
-        <View style={styles.formContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Nama"
-            value={clientName}
-            onChangeText={text => setClientName(text)}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="No HP"
-            value={clientNoHp}
-            onChangeText={text => setClientNoHp(text)}
-            keyboardType="numeric"
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            value={email}
-            onChangeText={text => setEmail(text)}
-            keyboardType="email-address" // Hanya menerima input dalam format email
-            autoCapitalize="none" // Tidak mengubah huruf menjadi huruf besar otomatis
-          />
-          <Picker
-            selectedValue={selectedLokasi}
-            onValueChange={(itemValue, itemIndex) => setSelectedLokasi(itemValue)}
-            style={styles.picker}
-            placeholder='Pilih Lokasi'
-          >
-            <Picker.Item label="Pilih Lokasi" value="" />
-            <Picker.Item label="Head Office" value="Head Office" />
-            <Picker.Item label="Semarang" value="Semarang" />
-          </Picker>
-          <Picker
-            selectedValue={selectedDepartemen}
-            onValueChange={(itemValue, itemIndex) => setSelectedDepartemen(itemValue)}
-            style={styles.picker}
-          >
-            <Picker.Item label="Pilih Departemen" value="" />
-            <Picker.Item label="IT" value="IT" />
-            <Picker.Item label="HRD & GA" value="HRD & GA" />
-            <Picker.Item label="Legal" value="Legal" />
-            <Picker.Item label="Procurement" value="Procurement" />
-            <Picker.Item label="Finance" value="Finance" />
-            <Picker.Item label="Accounting" value="Accounting" />
-            <Picker.Item label="Bidding" value="Bidding" />
-            <Picker.Item label="PPIC" value="PPIC" />
-            <Picker.Item label="Proyek" value="Proyek" />
-          </Picker>
-          <TextInput
-            style={[styles.input, { height: 100 }]}
-            placeholder="Informasikan Masalah Anda secara detail!"
-            multiline
-            value={problem}
-            onChangeText={text => setProblem(text)}
-          />
-          <TouchableOpacity style={styles.button} onPress={insertData}>
-            <Text style={styles.buttonText}>Send Message</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => {
-            setClientName('');
-            setEmail('');
-            setClientNoHp('');
-            setProblem('');
-            setSelectedLokasi('')
-            setSelectedDepartemen('')
-          }}>
-            <Text style={styles.buttonText}>Reset</Text>
-          </TouchableOpacity>
+          <View style={styles.formContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="Nama"
+              value={clientName}
+              onChangeText={text => setClientName(text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="No HP"
+              value={clientNoHp}
+              onChangeText={text => setClientNoHp(text)}
+              keyboardType="numeric"
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Email"
+              value={email}
+              onChangeText={text => setEmail(text)}
+              keyboardType="email-address" // Hanya menerima input dalam format email
+              autoCapitalize="none" // Tidak mengubah huruf menjadi huruf besar otomatis
+            />
+            <Picker
+              selectedValue={selectedLokasi}
+              onValueChange={(itemValue, itemIndex) => setSelectedLokasi(itemValue)}
+              style={styles.picker}
+              placeholder='Pilih Lokasi'
+            >
+              <Picker.Item label="Pilih Lokasi" value="" />
+              <Picker.Item label="Head Office" value="Head Office" />
+              <Picker.Item label="Semarang" value="Semarang" />
+            </Picker>
+            <Picker
+              selectedValue={selectedDepartemen}
+              onValueChange={(itemValue, itemIndex) => setSelectedDepartemen(itemValue)}
+              style={styles.picker}
+            >
+              <Picker.Item label="Pilih Departemen" value="" />
+              <Picker.Item label="IT" value="IT" />
+              <Picker.Item label="HRD & GA" value="HRD & GA" />
+              <Picker.Item label="Legal" value="Legal" />
+              <Picker.Item label="Procurement" value="Procurement" />
+              <Picker.Item label="Finance" value="Finance" />
+              <Picker.Item label="Accounting" value="Accounting" />
+              <Picker.Item label="Bidding" value="Bidding" />
+              <Picker.Item label="PPIC" value="PPIC" />
+              <Picker.Item label="Proyek" value="Proyek" />
+            </Picker>
+            <TextInput
+              style={[styles.input, { height: 100 }]}
+              placeholder="Informasikan Masalah Anda secara detail!"
+              multiline
+              value={problem}
+              onChangeText={text => setProblem(text)}
+            />
+            <TouchableOpacity style={styles.button} onPress={insertData}>
+              <Text style={styles.buttonText}>Kirim</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={() => {
+              setClientName('');
+              setEmail('');
+              setClientNoHp('');
+              setProblem('');
+              setSelectedLokasi('')
+              setSelectedDepartemen('')
+            }}>
+              <Text style={styles.buttonText}>Reset</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
+      {loading && <ActivityIndicator size="large" color="#0000ff" style={styles.loading}/>}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  base_container: {
     flex: 1,
     padding: 20,
     backgroundColor: '#ffffff',
+  },
+  container: {
+    height: '100%',
     // borderWidth: 8,
     // borderColor: 'red', // Warna border bisa disesuaikan
   },
   header: {
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 15,
   },
   centeredContent: {
     flex: 1,
@@ -175,9 +190,6 @@ const styles = StyleSheet.create({
   logo: {
     fontWeight: 'bold',
     fontSize: 20,
-  },
-  formContainer: {
-    
   },
   input: {
     height: 40,
@@ -211,5 +223,11 @@ const styles = StyleSheet.create({
     borderBottomColor: 'red',
     marginBottom: 30,
   },
+  loading: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  }
 });
 export default App;
